@@ -7,9 +7,16 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
 ```
 
-```{r}
+#import data file and selected only san franscisco  
 
+```{r}
+homicides <- read_csv("/Users/annik/homework5/homicide-data.csv")
+
+sanfrancisco <- homicides %>% 
+  filter(city == "San Francisco")
 ```
 
