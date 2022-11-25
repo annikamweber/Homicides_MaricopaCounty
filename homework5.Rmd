@@ -9,6 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(dplyr)
+library(tigris)
+library(ggplot2)
 ```
 
 #import data file and selected only san franscisco  
@@ -16,7 +18,21 @@ library(dplyr)
 ```{r}
 homicides <- read_csv("/Users/annik/homework5/homicide-data.csv")
 
-sanfrancisco <- homicides %>% 
-  filter(city == "San Francisco")
+phoenix_homicides <- homicides %>% 
+  filter(city == "Phoenix")
+```
+
+#sf map of phoenix, arizona  
+
+```{r}
+az_counties <- counties(state = "AZ", cb = TRUE, class = "sf")
+
+sanfran_county <- az_counties %>% 
+  filter(NAME == "Phoenix")
+
+phoenix_blocks <- block_groups("AZ", "Maricopa")
+
+ggplot() +
+  geom_sf(data = phoenix_blocks, fill = "darkcyan", alpha = 0.5) 
 ```
 
