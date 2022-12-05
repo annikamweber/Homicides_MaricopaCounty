@@ -2,7 +2,9 @@
 title: "homework5"
 author: "Annika Weber"
 date: "2022-11-22"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -20,8 +22,19 @@ library(forcats)
 ```{r}
 homicides <- read_csv("/Users/annik/homework5/homicide-data.csv")
 
-albuquerque_homicides <- homicides %>% 
-  filter(city == "Albuquerque")
+phoenix_homicides <- homicides %>% 
+  filter(city == "Phoenix")
+
+#group all unsolved homicides together in "unsolved" column
+phoenix_homicides <- phoenix_homicides %>% 
+  mutate(unsolved_homicides = disposition == "Closed without arrest" | 
+           disposition == "Open/No arrest") 
+
+#change TRUE and FALSE in "unsolved" column to "Solved" and "Unsolved"
+phoenix_homicides <- phoenix_homicides %>% 
+  mutate(unsolved_homicides = as_factor(x = unsolved_homicides),
+         unsolved_homicides = fct_recode(unsolved_homicides, Solved = "TRUE", 
+                                         Unsolved = "FALSE"))
 
 phoenix_homicides %>%
   mutate(victim_race = fct_lump(victim_race, n = 3)) %>%
@@ -45,14 +58,10 @@ ggplot() +
 phoenix_homicides <- st_as_sf(phoenix_homicides, coords = c("lon", "lat")) %>% 
   st_set_crs(4269)
 
-phoenix_homicides %>%
-  dplyr::mutate(victim_race = forcats::fct_lump(victim_race, n = 2)) %>%
-  dplyr::count(victim_race)
-
-
 ggplot() +
   geom_sf(data = phoenix_blocks, fill = "darkcyan", alpha = 0.5) +
-  geom_sf(data = phoenix_homicides, aes(color = factor(disposition))) + 
-  facet_wrap(~ disposition, ncol = 3)
+  geom_sf(data = phoenix_homicides, aes(colour = city)) + 
+  facet_wrap(~ unsolved_homicides) 
+  
 ```
 
